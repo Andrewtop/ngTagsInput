@@ -168,6 +168,7 @@ export default function TagsInputDirective($timeout, $document, $window, $q, tag
       onTagRemoving: '&',
       onTagRemoved: '&',
       onTagClicked: '&',
+      pasteOnlyUniq: '<?'
     },
     replace: false,
     transclude: true,
@@ -201,7 +202,8 @@ export default function TagsInputDirective($timeout, $document, $window, $q, tag
         allowLeftoverText: [Boolean, false],
         addFromAutocompleteOnly: [Boolean, false],
         spellcheck: [Boolean, true],
-        useStrings: [Boolean, false]
+        useStrings: [Boolean, false],
+        pasteOnlyUniq: [Boolean, false]
       });
 
       $scope.tagList = new TagList($scope.options, $scope.events,
@@ -451,9 +453,13 @@ export default function TagsInputDirective($timeout, $document, $window, $q, tag
             let tags = data.split(options.pasteSplitPattern);
 
             if (tags.length > 1) {
-              tags.forEach(tag => {
-                tagList.addText(tag);
-              });
+              tags = scope.pasteOnlyUniq ? tags.filter(function(tag, index, arr) {
+                return arr.indexOf(tag) === index;
+              }) : tags;
+
+              tags.forEach(function(tag) {
+                  tagList.addText(tag);
+              })
               event.preventDefault();
             }
           }

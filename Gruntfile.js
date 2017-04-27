@@ -84,7 +84,6 @@ module.exports = grunt => {
   grunt.registerTask('release', [
     'pack',
     'compress',
-    'changelog',
     'replace:changelog',
     'shell:git',
     'copy:bower',
